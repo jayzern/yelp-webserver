@@ -9,14 +9,15 @@ import json
 import os
 
 # Tiny dataset
-#BASE_DIR = './example_tiny_data/'
+BASE_DIR = './example_tiny_data/'
 
 # Actual dataset
-BASE_DIR = '../data'
+#BASE_DIR = '../data'
+
 PHOTOS_DIR = '../photos'
 
 def get_business_list():
-    file_dir = os.path.join(BASE_DIR, 'business.json')
+    file_dir = os.path.join(BASE_DIR, 'business_tiny.json')
     data = []
     with open(file_dir) as f:
         for line in f:
@@ -63,4 +64,9 @@ def get_photos_list():
             data.append(json.loads(line))
     return data
 
-print(get_business_list())
+def parse_dict_to_list(key_list, data):
+    """Transform list of dicts into list of list"""
+    data_list = [[None for x in range(len(key_list))] for y in range(len(data))]
+    for i in range(len(data_list)):
+        data_list[i] = [data[i][key] for key in key_list]
+    return data_list
