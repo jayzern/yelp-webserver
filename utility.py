@@ -8,65 +8,137 @@ Utility functions to extract data from the json files
 import json
 import os
 
-# Tiny dataset
 BASE_DIR = './example_tiny_data/'
 
-# Actual dataset
-#BASE_DIR = '../data'
-
-PHOTOS_DIR = '../photos'
-
-def get_business_list():
+def get_business():
     file_dir = os.path.join(BASE_DIR, 'business_tiny.json')
-    data = []
-    with open(file_dir) as f:
+    with open(file_dir, 'r') as f:
+        data = []
         for line in f:
-            data.append(json.loads(line))
-    return data
+            row = json.loads(line)
+            # Initialize
+            to_go = wifi = ambience = parking = price_range = hours = None
+            # Handle attributes here
+            # Get following attributes if they exists
+            # Coerce them into bool and str for now
+            if row['attributes']:
+                if "RestaurantsTakeOut" in row['attributes']:
+                    to_go = bool(row['attributes']['RestaurantsTakeOut'])
+                if "WiFi" in row['attributes']:
+                    wifi = bool(row['attributes']["WiFi"])
+                if "Ambience" in row['attributes']:
+                    ambience = str(row['attributes']["Ambience"])
+                if "BusinessParking" in row['attributes']:
+                    parking = bool(row['attributes']["BusinessParking"])
+                if "RestaurantsPriceRange2" in row['attributes']:
+                    price_range = str(row['attributes']["RestaurantsPriceRange2"])
+            hours = str(row['hours'])
+            insert = [
+                row['business_id'],
+                row['name'],
+                row['address'],
+                row['city'],
+                row['state'],
+                row['postal_code'],
+                row['review_count'],
+                row['categories'],
+                row['stars'],
+                to_go,
+                wifi,
+                ambience,
+                parking,
+                price_range,
+                hours
+            ]
+            data.append(insert)
+        return data
 
-def get_yelp_user_list():
+def get_yelp_user():
     file_dir = os.path.join(BASE_DIR, 'user_tiny.json')
-    data = []
-    with open(file_dir) as f:
+    with open(file_dir, 'r') as f:
+        data = []
         for line in f:
-            data.append(json.loads(line))
-    return data
+            row = json.loads(line)
+            insert = [
+                row['user_id'],
+                row['name'],
+                row['yelping_since'],
+                row['fans'],
+                row['average_stars'],
+                row['review_count']
+            ]
+            data.append(insert)
+        return data
 
-def get_reviews_list():
+def get_reviews():
     file_dir = os.path.join(BASE_DIR, 'review_tiny.json')
-    data = []
-    with open(file_dir) as f:
+    with open(file_dir, 'r') as f:
+        data = []
         for line in f:
-            data.append(json.loads(line))
-    return data
+            row = json.loads(line)
+            insert = [
+                row['review_id'],
+                row['business_id'],
+                row['user_id'],
+                row['date'],
+                row['stars'],
+                row['text'],
+                row['useful']
+            ]
+            data.append(insert)
+        return data
 
-def get_tips_list():
+def get_tips():
     file_dir = os.path.join(BASE_DIR, 'tip_tiny.json')
-    data = []
-    with open(file_dir) as f:
+    with open(file_dir, 'r') as f:
+        data = []
         for line in f:
-            data.append(json.loads(line))
-    return data
+            row = json.loads(line)
+            insert = [
+                row['business_id'],
+                row['user_id'],
+                row['compliment_count'],
+                row['date'],
+                row['text']
+            ]
+            data.append(insert)
+        return data
 
-def get_checkins_list():
+def get_checkins():
+    """Rearrange dates to pairs here"""
     file_dir = os.path.join(BASE_DIR, 'checkin_tiny.json')
-    data = []
-    with open(file_dir) as f:
+    with open(file_dir, 'r') as f:
+        data = []
         for line in f:
-            data.append(json.loads(line))
-    return data
+            row = json.loads(line)
+            data.append(row)
 
-def get_photos_list():
-    file_dir = os.path.join(PHOTOS_DIR, 'photo_tiny.json')
-    data = []
-    with open(file_dir) as f:
+        # Rearrange data
+        rearranged_data = []
+        for i in range(len(data)):
+            date_list = [x.strip() for x in data[i]['date'].split(',')]
+            business_id_list = [
+                data[i]['business_id'] for x in data[i]['date'].split(',')]
+            business_checkins = list(zip(business_id_list, date_list))
+            rearranged_data = rearranged_data + business_checkins
+        data = rearranged_data
+        return data
+
+def get_media():
+    file_dir = os.path.join(BASE_DIR, 'photo_tiny.json')
+    with open(file_dir, 'r') as f:
+        data = []
         for line in f:
-            data.append(json.loads(line))
-    return data
+            row = json.loads(line)
 
-def parse_dict_to_list(key_list, data):
-    """Transform list of dicts into list of list"""
-    data_list = [[None for x in range(len(key_list))] for y in range(len(data))]
-    for i in range(len(data_list)):
-        data_list[i] = [data[i][key] for key in key_list]
-    return data_list
+            # TODO: get blob data
+            blob = None
+
+            insert = [
+                row['photo_id'],
+                row['business_id'],
+                blob,
+                row['caption']
+            ]
+            data.append(insert)
+        return data
