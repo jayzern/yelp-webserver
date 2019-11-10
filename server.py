@@ -125,19 +125,37 @@ def login():
     this_is_never_executed()
 
 
+# TODO: implement
 @app.route('/get_business', methods=['POST'])
 def get_business():
     business = request.form['business']
-    print("CHECK INPUT",business)
-    cursor = g.conn.execute('SELECT * FROM Business WHERE business_id=?', business)
+    cursor = g.conn.execute('SELECT * FROM Business WHERE business_id = %s',(business))
     names = []
     for result in cursor:
-        names.append(result)
+        names.append(result['name'])
     cursor.close()
     context = dict(data=names)
-    print(context)
-    return redirect('/')
+    return render_template("index.html", **context)
 
+# TODO: implement
+@app.route('/get_yelp_user', methods=['POST'])
+def get_yelp_user():
+    pass
+
+# TODO: implement
+@app.route('/get_reviews', methods=['POST'])
+def get_yelp_user():
+    pass
+
+# TODO: implement
+@app.route('/get_tips', methods=['POST'])
+def get_yelp_user():
+    pass
+
+# TODO: implement
+@app.route('/get_yelp_user', methods=['POST'])
+def get_yelp_user():
+    pass
 
 if __name__ == "__main__":
     import click
