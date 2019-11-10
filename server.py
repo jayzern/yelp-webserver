@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.6
 
 """
 Columbia's COMS W4111.001 Introduction to Databases
@@ -64,7 +64,7 @@ def before_request():
     try:
         g.conn = engine.connect()
     except BaseException:
-        print "uh oh, problem connecting to database"
+        print("uh oh, problem connecting to database")
         import traceback
         traceback.print_exc()
         g.conn = None
@@ -95,7 +95,7 @@ def index():
     """
 
     # For debugging
-    print request.args
+    print(request.args)
 
     cursor = g.conn.execute("SELECT * FROM business")
     names = []
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         """
 
         HOST, PORT = host, port
-        print "running on %s:%d" % (HOST, PORT)
+        print("running on %s:%d" % (HOST, PORT))
         app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
 
     run()
