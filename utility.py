@@ -10,6 +10,7 @@ import os
 
 BASE_DIR = './example_tiny_data/'
 
+
 def get_business():
     file_dir = os.path.join(BASE_DIR, 'business_tiny.json')
     with open(file_dir, 'r') as f:
@@ -31,7 +32,8 @@ def get_business():
                 if "BusinessParking" in row['attributes']:
                     parking = bool(row['attributes']["BusinessParking"])
                 if "RestaurantsPriceRange2" in row['attributes']:
-                    price_range = str(row['attributes']["RestaurantsPriceRange2"])
+                    price_range = str(
+                        row['attributes']["RestaurantsPriceRange2"])
             hours = str(row['hours'])
             insert = [
                 row['business_id'],
@@ -53,6 +55,7 @@ def get_business():
             data.append(insert)
         return data
 
+
 def get_yelp_user():
     file_dir = os.path.join(BASE_DIR, 'user_tiny.json')
     with open(file_dir, 'r') as f:
@@ -69,6 +72,7 @@ def get_yelp_user():
             ]
             data.append(insert)
         return data
+
 
 def get_reviews():
     file_dir = os.path.join(BASE_DIR, 'review_tiny.json')
@@ -88,6 +92,7 @@ def get_reviews():
             data.append(insert)
         return data
 
+
 def get_tips():
     file_dir = os.path.join(BASE_DIR, 'tip_tiny.json')
     with open(file_dir, 'r') as f:
@@ -103,6 +108,7 @@ def get_tips():
             ]
             data.append(insert)
         return data
+
 
 def get_checkins():
     """Rearrange dates to pairs here"""
@@ -123,6 +129,7 @@ def get_checkins():
             rearranged_data = rearranged_data + business_checkins
         data = rearranged_data
         return data
+
 
 def get_media():
     file_dir = os.path.join(BASE_DIR, 'photo_tiny.json')

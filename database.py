@@ -7,7 +7,6 @@ Put Yelp database related things here only.
 Note: Cannot use ORMs in sqlalchemy.
 """
 
-import utility as util
 import os
 import psycopg2
 
@@ -24,6 +23,7 @@ CONFIG = "dbname=postgres \
           user=postgres \
           password=amaurylovesalex"
 
+
 def create_schema():
     """Create schema directly from yelp_schema.sql"""
     engine = create_engine(DATABASEURI)
@@ -35,6 +35,7 @@ def create_schema():
     except exc.SQLAlchemyError:
         raise
 
+
 def tabulate_business(data):
     """
     Use psycopg2 instead of sqlalchemy to tabulate data. Not allowed to use
@@ -43,8 +44,10 @@ def tabulate_business(data):
     try:
         conn = psycopg2.connect(CONFIG)
         cur = conn.cursor()
-        args_str = ','.join(cur.mogrify(
-            "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", x).decode("utf-8") for x in data)
+        args_str = ','.join(
+            cur.mogrify(
+                "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                x).decode("utf-8") for x in data)
         sql_command = """INSERT INTO Business
                             (business_id,
                             name,
@@ -71,6 +74,7 @@ def tabulate_business(data):
         if conn is not None:
             conn.close()
 
+
 def tabulate_yelp_user(data):
     try:
         conn = psycopg2.connect(CONFIG)
@@ -93,6 +97,7 @@ def tabulate_yelp_user(data):
     finally:
         if conn is not None:
             conn.close()
+
 
 def tabulate_reviews(data):
     try:
@@ -118,6 +123,7 @@ def tabulate_reviews(data):
         if conn is not None:
             conn.close()
 
+
 def tabulate_tips(data):
     try:
         conn = psycopg2.connect(CONFIG)
@@ -140,6 +146,7 @@ def tabulate_tips(data):
         if conn is not None:
             conn.close()
 
+
 def tabulate_checkins(data):
     try:
         conn = psycopg2.connect(CONFIG)
@@ -158,6 +165,7 @@ def tabulate_checkins(data):
     finally:
         if conn is not None:
             conn.close()
+
 
 def tabulate_media(data):
     try:
@@ -179,27 +187,3 @@ def tabulate_media(data):
     finally:
         if conn is not None:
             conn.close()
-
-if __name__ == "__main__":
-    """Put these functions inside server.py later"""
-    # Drop and create schema
-    create_schema()
-
-    # Tabulate data
-    business_data = util.get_business()
-    tabulate_business(business_data)
-
-    yelp_user_data = util.get_yelp_user()
-    tabulate_yelp_user(yelp_user_data)
-
-    reviews_data = util.get_reviews()
-    tabulate_reviews(reviews_data)
-
-    tips_data = util.get_tips()
-    tabulate_tips(tips_data)
-
-    checkins_data = util.get_checkins()
-    tabulate_checkins(checkins_data)
-
-    media_data = util.get_media()
-    tabulate_media(media_data)
