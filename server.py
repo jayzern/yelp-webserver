@@ -138,24 +138,24 @@ def get_business():
     return render_template("index.html", **context)
 
 # TODO: implement
-@app.route('/get_yelp_user', methods=['POST'])
-def get_yelp_user():
-    pass
-
-# TODO: implement
-@app.route('/get_reviews', methods=['POST'])
-def get_yelp_user():
-    pass
-
-# TODO: implement
-@app.route('/get_tips', methods=['POST'])
-def get_yelp_user():
-    pass
-
-# TODO: implement
-@app.route('/get_yelp_user', methods=['POST'])
-def get_yelp_user():
-    pass
+# @app.route('/get_yelp_user', methods=['POST'])
+# def get_yelp_user():
+#     pass
+#
+# # TODO: implement
+# @app.route('/get_reviews', methods=['POST'])
+# def get_yelp_user():
+#     pass
+#
+# # TODO: implement
+# @app.route('/get_tips', methods=['POST'])
+# def get_yelp_user():
+#     pass
+#
+# # TODO: implement
+# @app.route('/get_yelp_user', methods=['POST'])
+# def get_yelp_user():
+#     pass
 
 if __name__ == "__main__":
     import click
