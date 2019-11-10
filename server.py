@@ -18,7 +18,7 @@ NOTE: Remember to handle SQL Injections, otherwise lose marks
 
 import os
 import utility as util
-import database as db
+#import database as db
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
