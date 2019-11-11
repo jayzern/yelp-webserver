@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS Yelp_User(
 );
 
 CREATE TABLE IF NOT EXISTS Reviews (
-    review_id VARCHAR(128),
+    review_id SERIAL, -- change to serial for auto-increment
     business_id VARCHAR(128) NOT NULL, -- Reviews must be for a business
     user_id VARCHAR(128) NOT NULL, -- Reviews must be written by a user
     review_date DATE,

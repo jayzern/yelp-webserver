@@ -145,8 +145,58 @@
       </form>
 
       <h1>Insert New Data</h1>
-      
+      <h5>Write a review for a business:</h5>
+      <form method="POST" action="/insert_reviews">
+        <p>
+          business_id: <input type="text" name="business_id">
+          user_id: <input type="text" name="user_id">
+          review_date: <input type="text" name="review_date">
+          stars: <input type="text" name="stars">
+          review_text: <input type="text" name="review_text">
+          useful_count: <input type="text" name="useful_count">
+          <input type="submit" value="Insert">
+        </p>
+      </form>
 
+      <h5>Write a tip for a business:</h5>
+      <form method="POST" action="/insert_tips">
+        <p>
+          business_id: <input type="text" name="business_id">
+          user_id: <input type="text" name="user_id">
+          compliment_count: <input type="text" name="compliment_count">
+          tip_date: <input type="text" name="tip_date">
+          tip_text: <input type="text" name="tip_text">
+          <input type="submit" value="Insert">
+        </p>
+      </form>
+
+      <h5>Add friends:</h5>
+      <form method="POST" action="/insert_friends">
+        <p>
+          user_one_id: <input type="text" name="user_one_id">
+          user_two_id: <input type="text" name="user_two_id">
+          <input type="submit" value="Insert">
+        </p>
+      </form>
+
+      <h1>Update Tables</h1>
+      <h5>Upvote reviews if they are useful:</h5>
+      <form method="POST" action="/update_reviews_useful">
+        <p>
+          review_id: <input type="text" name="review_id">
+          <input type="submit" value="Insert">
+        </p>
+      </form>
+
+      <h5>Checkin a business:</h5>
+      <form method="POST" action="/update_reviews_useful">
+        <p>
+          review_id: <input type="text" name="review_id">
+          <input type="submit" value="Insert">
+        </p>
+      </form>
+
+      <!-- <h5>Upvote reviews if they are useful:</h5>-->
 
       <div>
         {% for list in data %}

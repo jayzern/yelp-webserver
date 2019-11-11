@@ -15,7 +15,8 @@ Read about it online.
 
 NOTE:
 - Remember to handle SQL Injections, otherwise lose marks
-- Should be able to GET, UPDATE, DELETE
+- Should be able to UPDATE, DELETE
+- Implement ERROR handling
 """
 
 import os
@@ -416,6 +417,89 @@ def get_users_enjoyed():
         for result in cursor:
             data.append({
                 'name':result['name']
+            })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+# TODO:
+@app.route('/insert_reviews', methods=['POST'])
+def insert_reviews():
+    # Get data from forms
+    business_id = request.form['business_id']
+    user_id = request.form['user_id']
+    review_date = request.form['review_date']
+    stars = request.form['stars']
+    review_text = request.form['review_text']
+    useful_count = request.form['useful_count']
+
+    # Set the sequence to the next value
+    g.conn.execute("""SELECT setval('reviews_review_id_seq', max(review_id)) FROM Reviews;""")
+
+    # Execute query
+    # review_id will auto increment here
+    g.conn.execute(
+        'INSERT INTO Reviews \
+            (review_id, business_id, user_id, review_date, stars, review_text, useful_count) \
+        VALUES \
+            (DEFAULT, %s, %s, %s, %s, %s ,%s)',
+        (business_id, user_id, review_date, stars, review_text, useful_count)
+    )
+
+    return render_template("index.html")
+
+# TODO:
+@app.route('/insert_tips', methods=['POST'])
+def insert_tips():
+    # Get data from forms
+    business_id = request.form['business_id']
+    user_id = request.form['user_id']
+    compliment_count = request.form['compliment_count']
+    tip_date = request.form['tip_date']
+    tip_text = request.form['tip_text']
+
+    # Execute query
+    g.conn.execute(
+        'INSERT INTO Tips \
+            (business_id, user_id, compliment_count, tip_date, tip_text) \
+        VALUES \
+            (%s, %s, %s, %s ,%s)',
+        (business_id, user_id, compliment_count, tip_date, tip_text)
+    )
+
+    return render_template("index.html")
+
+# TODO:
+@app.route('/update_reviews_useful', methods=['POST'])
+def update_reviews_useful():
+    # Get data from forms
+    review_id = request.form['review_id']
+
+    # Execute query
+    g.conn.execute(
+        'UPDATE Reviews \
+        SET useful_count = useful_count + 1 \
+        WHERE review_id = %s',
+        (review_id)
+    )
+
+    # Return updated value
+    cursor = g.conn.execute(
+        'SELECT review_id, useful_count \
+        FROM Reviews \
+        WHERE review_id = %s',
+        (review_id)
+    )
+
+    # Fetch data
+    data = []
+    if cursor:
+        for result in cursor:
+            data.append({
+                'review_id':result['review_id'],
+                'useful_count':result['useful_count']
             })
     cursor.close()
 
