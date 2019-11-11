@@ -39,7 +39,6 @@ def create_schema():
     except exc.SQLAlchemyError:
         raise
 
-
 def tabulate_business(data):
     """
     Use psycopg2 instead of sqlalchemy to tabulate data. Not allowed to use

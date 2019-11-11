@@ -144,7 +144,7 @@
         </p>
       </form>
 
-      <h1>Insert New Data</h1>
+      <h1>Insert/Update New Data</h1>
       <h5>Write a review for a business:</h5>
       <form method="POST" action="/insert_reviews">
         <p>
@@ -179,7 +179,15 @@
         </p>
       </form>
 
-      <h1>Update Tables</h1>
+      <h5>Checkin a business:</h5>
+      <form method="POST" action="/insert_checkins">
+        <p>
+          business_id: <input type="text" name="business_id">
+          checkin_date: <input type="text" name="checkin_date">
+          <input type="submit" value="Insert">
+        </p>
+      </form>
+
       <h5>Upvote reviews if they are useful:</h5>
       <form method="POST" action="/update_reviews_useful">
         <p>
@@ -187,15 +195,6 @@
           <input type="submit" value="Insert">
         </p>
       </form>
-
-      <h5>Checkin a business:</h5>
-      <form method="POST" action="/update_reviews_useful">
-        <p>
-          review_id: <input type="text" name="review_id">
-          <input type="submit" value="Insert">
-        </p>
-      </form>
-
       <!-- <h5>Upvote reviews if they are useful:</h5>-->
 
       <div>

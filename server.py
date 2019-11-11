@@ -15,7 +15,7 @@ Read about it online.
 
 NOTE:
 - Remember to handle SQL Injections, otherwise lose marks
-- Should be able to UPDATE, DELETE
+- Should be able to DELETE
 - Implement ERROR handling
 """
 
@@ -54,7 +54,6 @@ checkins_data = util.get_checkins()
 db.tabulate_checkins(checkins_data)
 media_data = util.get_media()
 db.tabulate_media(media_data)
-
 
 @app.before_request
 def before_request():
@@ -470,6 +469,47 @@ def insert_tips():
     )
 
     return render_template("index.html")
+
+# TODO:
+@app.route('/insert_friends', methods=['POST'])
+def insert_friends():
+    # Get data from forms
+    user_one_id = request.form['user_one_id']
+    user_two_id = request.form['user_two_id']
+
+    # Set the sequence to the next value
+    g.conn.execute("""SELECT setval('friend_of_friendship_id_seq', max(friendship_id)) FROM Friend_Of;""")
+
+    # Execute query
+    g.conn.execute(
+        'INSERT INTO Friend_Of \
+            (friendship_id, user_one_id, user_two_id) \
+        VALUES \
+            (DEFAULT, %s, %s)',
+        (user_one_id, user_two_id)
+    )
+
+    return render_template("index.html")
+
+# TODO:
+@app.route('/insert_checkins', methods=['POST'])
+def insert_checkins():
+    # Get data from forms
+    business_id = request.form['business_id']
+    checkin_date = request.form['checkin_date']
+
+    # Execute query
+    g.conn.execute(
+        'INSERT INTO Checkins \
+            (business_id, checkin_date) \
+        VALUES \
+            (%s, %s)',
+        (user_one_id, user_two_id)
+    )
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
 
 # TODO:
 @app.route('/update_reviews_useful', methods=['POST'])

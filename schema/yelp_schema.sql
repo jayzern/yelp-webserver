@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS Media (
 -- Design Considerations:
 -- user_one_id is a friend of user_two_id implies that user_two_id is a friend of user_two_id.
 CREATE TABLE IF NOT EXISTS Friend_Of (
-    friendship_id VARCHAR(128), -- Enforce friendship uniqueness when doing INSERT.
+    friendship_id SERIAL, -- Enforce friendship uniqueness when doing INSERT.
     user_one_id VARCHAR(128) NOT NULL, -- update
     user_two_id VARCHAR(128) NOT NULL, -- update
     PRIMARY KEY (friendship_id),
