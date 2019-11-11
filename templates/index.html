@@ -83,13 +83,49 @@
       </form>
 
       <h1>Complex Queries</h1>
-      <h5>Get businesses that have at least 20% higher checkins than the average checkins:</h5>
-      <form method="POST" action="/get_top_business">
+      <h5>Sometimes businesses that are busy tend to be a good sign that it
+      must be good. Find the name, address and photos (if any) of businesses
+      that have at least X total checkins and have an average rating of at
+      least Y.</h5>
+      <form method="POST" action="/get_busy_business">
         <p>
+          checkins: <input type="text" name="checkins">
+          ratings: <input type="text" name="ratings">
           <input type="submit" value="Search">
         </p>
       </form>
 
+      <h5>The best way to explore businesses from Yelp is to get advice from
+      your friends! Here, we want to find all written tips (tips are like
+      written reviews, except that they are shorter) given to businesses
+      written by your friends (assume you are user_id = X), plus the name
+      of the business and the name of your friends.</h5>
+      <form method="POST" action="/get_friend_tips">
+        <p>
+          user_id: <input type="text" name="user_id">
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+      <h5>Find user_ids and names of people who have written reviews of
+      businesses in any city X.</h5>
+      <form method="POST" action="/get_users_city">
+        <p>
+          city: <input type="text" name="city">
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+      <h5>If you are looking for a new restaurant you might have look on what
+      your friends tried but you don't have tried yet. The following query
+      makes you able to look at all the business your friends reviewed but you
+      have not reviewed yet. (Here we suppose to be user_id = X)</h5>
+      <form method="POST" action="/get_friend_reviewed">
+        <p>
+          user_id: <input type="text" name="user_id">
+          <input type="submit" value="Search">
+        </p>
+      </form>
 
       <div>
         {% for list in data %}

@@ -116,7 +116,7 @@ def login():
     this_is_never_executed()
 
 
-# TODO:
+"""Basic Queries"""
 @app.route('/get_business', methods=['POST'])
 def get_business():
     # Get data from forms
@@ -218,6 +218,148 @@ def get_reviews():
             'review_text':result['review_text'],
             'useful_count':result['useful_count'],
         })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+
+"""Complex Queries"""
+# TODO:
+@app.route('/get_busy_business', methods=['POST'])
+def get_busy_business():
+    # Get data from forms
+    checkins = request.form['checkins']
+    ratings = request.form['ratings']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT B1.name, B1.address, M.blob_data \
+        FROM Business B1 INNER JOIN Media M ON B1.business_id = M.business_id \
+        WHERE \
+            B1.business_id IN ((SELECT B2.business_id \
+                                FROM Business B2 \
+                                WHERE B2.avg_stars > %s) \
+                                INTERSECT \
+                                (SELECT C.business_id \
+                                FROM Checkins C \
+                                GROUP BY C.business_id \
+                                HAVING COUNT(C.business_id) > %s))',
+        (ratings, checkins)
+    )
+
+    # Fetch data
+    data = []
+    for result in cursor:
+        data.append({
+            'name':result['name'],
+            'address':result['address'],
+            'blob_data':result['blob_data']
+        })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+# TODO:
+@app.route('/get_friend_tips', methods=['POST'])
+def get_friend_tips():
+    # Get data from forms
+    user_id = request.form['user_id']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT U.name AS user_name, B.name AS business_name, T.tip_text \
+        FROM Yelp_User U, Business B, Tips T \
+        WHERE U.user_id = T.user_id AND T.business_id = B.business_id \
+        AND \
+            U.user_id IN ((SELECT F.user_two_id AS friends_of_user_one \
+                          FROM Yelp_User U, Friend_Of F \
+                          WHERE U.user_id = F.user_one_id AND U.user_id = %s) \
+                          UNION \
+                          (SELECT F.user_two_id AS friends_of_user_one \
+                          FROM Yelp_User U, Friend_Of F \
+                          WHERE U.user_id = F.user_two_id AND U.user_id = %s))',
+        (user_id, user_id)
+    )
+
+    # Fetch data
+    data = []
+    for result in cursor:
+        data.append({
+            'user_name':result['user_name'],
+            'business_name':result['business_name'],
+            'tip_text':result['tip_text']
+        })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+# TODO:
+@app.route('/get_users_city', methods=['POST'])
+def get_users_city():
+    # Get data from forms
+    city = request.form['city']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT U.user_id, U.name \
+        FROM Yelp_User U \
+        WHERE U.user_id IN \
+            (SELECT R.user_id \
+            FROM Reviews R \
+            WHERE EXISTS \
+                (SELECT * \
+                FROM Business B \
+                WHERE B.city = %s AND R.business_id = B.business_id))',
+        (city)
+    )
+
+    # Fetch data
+    data = []
+    for result in cursor:
+        data.append({
+            'user_id':result['user_id'],
+            'name':result['name']
+        })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+# TODO:
+@app.route('/get_friend_reviewed', methods=['POST'])
+def get_friend_reviewed():
+    # Get data from forms
+    user_id = request.form['user_id']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT business_id FROM reviews R \
+        JOIN \
+            (SELECT user_one_id AS u_id FROM Friend_of WHERE user_two_id = %s \
+            UNION \
+            SELECT user_two_id AS u_id FROM Friend_of WHERE user_one_id = %s) F \
+        ON R.user_id = F.u_id \
+        WHERE business_id NOT IN ( \
+            SELECT business_id FROM reviews \
+            WHERE user_id = %s \
+        )',
+        (user_id, user_id, user_id)
+    )
+
+    # Fetch data
+    data = []
+    if cursor:
+        for result in cursor:
+            data.append({
+                'business_id':result['business_id']
+            })
     cursor.close()
 
     # Send to View
