@@ -45,9 +45,6 @@
     {% include 'header.html' %}
     <div class="container">
       <h1>Basic Queries</h1>
-
-      <!-- Basic Queries -->
-
       <!-- Get Businesses -->
       <h5>Find businesses</h5>
       <form method="POST" action="/get_business">
@@ -126,6 +123,30 @@
           <input type="submit" value="Search">
         </p>
       </form>
+
+      <h5>We are planing a trip in a city X (i.e. Las Vegas) thus we want to
+      check all useful reviews of city X businesses.</h5>
+      <form method="POST" action="/get_visit_city">
+        <p>
+          city: <input type="text" name="city">
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+      <h5>We are a business and we are interested by people who enjoyed our
+      restaurant more than the average. With this query we can check name of
+      reviewers that preferred my business (business_id = X) more than the average.
+      </h5>
+      <form method="POST" action="/get_users_enjoyed">
+        <p>
+          business_id: <input type="text" name="business_id">
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+      <h1>Insert New Data</h1>
+      
+
 
       <div>
         {% for list in data %}

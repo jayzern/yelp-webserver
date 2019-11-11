@@ -366,6 +366,64 @@ def get_friend_reviewed():
     context = dict(data=data)
     return render_template("index.html", **context)
 
+
+# TODO:
+@app.route('/get_visit_city', methods=['POST'])
+def get_visit_city():
+    # Get data from forms
+    city = request.form['city']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT R.review_text, B.name FROM reviews R \
+        JOIN business B ON B.business_id = R.business_id \
+        WHERE B.city = %s AND R.useful_count > 0',
+        (city)
+    )
+
+    # Fetch data
+    data = []
+    if cursor:
+        for result in cursor:
+            data.append({
+                'review_text':result['review_text'],
+                'name':result['name']
+            })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+# TODO:
+@app.route('/get_users_enjoyed', methods=['POST'])
+def get_users_enjoyed():
+    # Get data from forms
+    business_id = request.form['business_id']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT Y.name FROM yelp_user Y \
+        JOIN reviews R ON R.user_id = Y.user_id \
+        JOIN business B ON B.business_id = R.business_id \
+        WHERE B.business_id = %s AND CAST(R.stars AS REAL) >= B.avg_stars',
+        (business_id)
+    )
+
+    # Fetch data
+    data = []
+    if cursor:
+        for result in cursor:
+            data.append({
+                'name':result['name']
+            })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+
 if __name__ == "__main__":
     import click
 
