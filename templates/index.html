@@ -16,7 +16,7 @@
       margin-bottom: 60px;
     }
 
-    .footer {
+    footer {
       position: absolute;
       bottom: 0;
       width: 100%;
@@ -30,7 +30,7 @@
       padding: 60px 15px 0;
     }
 
-    .footer > .container {
+    footer > .container {
       padding-right: 15px;
       padding-left: 15px;
     }
@@ -44,18 +44,65 @@
     <!-- Header -->
     {% include 'header.html' %}
     <div class="container">
-      <h1>Yelp Businesses</h1>
+      <h1>Basic Queries</h1>
+
+      <!-- Basic Queries -->
+
+      <!-- Get Businesses -->
+      <h5>Find businesses</h5>
       <form method="POST" action="/get_business">
-        <p>Find a business!! <input type="text" name="business"> <input type="submit" value="find stuff"></p>
+        <p>
+          business_id: <input type="text" name="business_id">
+          name: <input type="text" name="name">
+          address: <input type="text" name="address">
+          city: <input type="text" name="city">
+          state: <input type="text" name="state">
+          <input type="submit" value="Search">
+        </p>
       </form>
-      <div>{{data}}</div>
+
+      <!-- Get Users -->
+      <h5>Find users</h5>
+      <form method="POST" action="/get_yelp_user">
+        <p>
+          user_id: <input type="text" name="user_id">
+          name: <input type="text" name="name">
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+      <!-- Get Reviews -->
+      <h5>Find reviews</h5>
+      <form method="POST" action="/get_reviews">
+        <p>
+          review_id: <input type="text" name="review_id">
+          business_id: <input type="text" name="business_id">
+          user_id: <input type="text" name="user_id">
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+      <h1>Complex Queries</h1>
+      <h5>Get businesses that have at least 20% higher checkins than the average checkins:</h5>
+      <form method="POST" action="/get_top_business">
+        <p>
+          <input type="submit" value="Search">
+        </p>
+      </form>
+
+
       <div>
-        {% for n in data %}
-        <div>{{n}}</div>
+        {% for list in data %}
+          <div class="card">
+            <div class="card-body">
+              {% for key,value in list.items() %}
+                <b>{{key}}</b>: {{value}}
+              {% endfor %}
+            </div>
+          </div>
         {% endfor %}
+        <br>
       </div>
-      <p>
-      <a href="another">Go to the other page</a></p>
     </div>
   <!-- Footer -->
   {% include 'footer.html' %}

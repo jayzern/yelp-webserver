@@ -13,12 +13,15 @@ Go to http://localhost:8111 in your browser.
 A debugger such as "pdb" may be helpful for debugging.
 Read about it online.
 
-NOTE: Remember to handle SQL Injections, otherwise lose marks
+NOTE:
+- Remember to handle SQL Injections, otherwise lose marks
+- Should be able to GET, UPDATE, DELETE
 """
 
 import os
+import psycopg2
 import utility as util
-#import database as db
+import database as db
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
@@ -31,25 +34,25 @@ tmpl_dir = os.path.join(
 app = Flask(__name__, template_folder=tmpl_dir)
 
 """Google Cloud database"""
-DATABASEURI = "postgresql://jn2717:amaurylovesalex@35.196.44.144/w4111"
-#DATABASEURI = "postgresql://postgres:amaurylovesalex@127.0.0.1"
+#DATABASEURI = "postgresql://jn2717:amaurylovesalex@35.196.44.144/w4111"
+DATABASEURI = "postgresql://postgres:amaurylovesalex@127.0.0.1"
 
 engine = create_engine(DATABASEURI)
 
 # Tabulates data using database.py and utility.py
-# db.create_schema()
-# business_data = util.get_business()
-# db.tabulate_business(business_data)
-# yelp_user_data = util.get_yelp_user()
-# db.tabulate_yelp_user(yelp_user_data)
-# reviews_data = util.get_reviews()
-# db.tabulate_reviews(reviews_data)
-# tips_data = util.get_tips()
-# db.tabulate_tips(tips_data)
-# checkins_data = util.get_checkins()
-# db.tabulate_checkins(checkins_data)
-# media_data = util.get_media()
-# db.tabulate_media(media_data)
+db.create_schema()
+business_data = util.get_business()
+db.tabulate_business(business_data)
+yelp_user_data = util.get_yelp_user()
+db.tabulate_yelp_user(yelp_user_data)
+reviews_data = util.get_reviews()
+db.tabulate_reviews(reviews_data)
+tips_data = util.get_tips()
+db.tabulate_tips(tips_data)
+checkins_data = util.get_checkins()
+db.tabulate_checkins(checkins_data)
+media_data = util.get_media()
+db.tabulate_media(media_data)
 
 
 @app.before_request
@@ -97,19 +100,7 @@ def index():
     # For debugging
     print(request.args)
 
-    cursor = g.conn.execute("SELECT * FROM business")
-    names = []
-    for result in cursor:
-        names.append(result)
-    cursor.close()
-    context = dict(data=names)
-
-    return render_template("index.html", **context)
-
-
-@app.route('/another')
-def another():
-    return render_template("another.html")
+    return render_template("index.html")
 
 
 @app.route('/add', methods=['POST'])
@@ -125,37 +116,113 @@ def login():
     this_is_never_executed()
 
 
-# TODO: implement
+# TODO:
 @app.route('/get_business', methods=['POST'])
 def get_business():
-    business = request.form['business']
-    cursor = g.conn.execute('SELECT * FROM Business WHERE business_id = %s',(business))
-    names = []
+    # Get data from forms
+    business_id = request.form['business_id']
+    name = request.form['name']
+    address = request.form['address']
+    city = request.form['city']
+    state = request.form['state']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT * FROM Business WHERE \
+            (business_id = %s OR name = %s OR \
+            address = %s OR city = %s OR state = %s)',
+        (business_id, name, address, city, state)
+    )
+
+    # Fetch data
+    data = []
     for result in cursor:
-        names.append(result['name'])
+        data.append({
+            'business_id':result['business_id'],
+            'name':result['name'],
+            'address':result['address'],
+            'city':result['city'],
+            'state':result['state'],
+            'postal_code':result['postal_code'],
+            'review_count':result['review_count'],
+            'categories_list':result['categories_list'],
+            'avg_stars':result['avg_stars'],
+            'to_go':result['to_go'],
+            'wifi':result['wifi'],
+            'ambience':result['ambience'],
+            'parking':result['parking'],
+            'price_range':result['price_range'],
+            'open_hours':result['open_hours']
+        })
     cursor.close()
-    context = dict(data=names)
+
+    # Send to View
+    context = dict(data=data)
     return render_template("index.html", **context)
 
-# TODO: implement
-# @app.route('/get_yelp_user', methods=['POST'])
-# def get_yelp_user():
-#     pass
-#
-# # TODO: implement
-# @app.route('/get_reviews', methods=['POST'])
-# def get_yelp_user():
-#     pass
-#
-# # TODO: implement
-# @app.route('/get_tips', methods=['POST'])
-# def get_yelp_user():
-#     pass
-#
-# # TODO: implement
-# @app.route('/get_yelp_user', methods=['POST'])
-# def get_yelp_user():
-#     pass
+# TODO:
+@app.route('/get_yelp_user', methods=['POST'])
+def get_yelp_user():
+    # Get data from forms
+    user_id = request.form['user_id']
+    name = request.form['name']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT * FROM Yelp_User WHERE \
+            (user_id = %s OR name = %s)',
+        (user_id, name)
+    )
+
+    # Fetch data
+    data = []
+    for result in cursor:
+        data.append({
+            'user_id':result['user_id'],
+            'name':result['name'],
+            'registration_date':result['registration_date'],
+            'fans':result['fans'],
+            'avg_stars':result['avg_stars'],
+            'review_count':result['review_count']
+        })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
+
+# TODO:
+@app.route('/get_reviews', methods=['POST'])
+def get_reviews():
+    # Get data from forms
+    review_id = request.form['review_id']
+    business_id = request.form['business_id']
+    user_id = request.form['user_id']
+
+    # Execute query
+    cursor = g.conn.execute(
+        'SELECT * FROM Reviews WHERE \
+            (review_id = %s OR business_id = %s OR user_id = %s)',
+        (review_id, business_id, user_id)
+    )
+
+    # Fetch data
+    data = []
+    for result in cursor:
+        data.append({
+            'review_id':result['review_id'],
+            'business_id':result['business_id'],
+            'user_id':result['user_id'],
+            'review_date':result['review_date'],
+            'stars':result['stars'],
+            'review_text':result['review_text'],
+            'useful_count':result['useful_count'],
+        })
+    cursor.close()
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
 
 if __name__ == "__main__":
     import click

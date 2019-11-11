@@ -16,16 +16,16 @@ from sqlalchemy import text
 from sqlalchemy import exc
 
 # sqlalchemy config
-DATABASEURI = "postgresql://jn2717:amaurylovesalex@35.196.44.144/w4111"
-#DATABASEURI = "postgresql://postgres:amaurylovesalex@127.0.0.1"
+#DATABASEURI = "postgresql://jn2717:amaurylovesalex@35.196.44.144/w4111"
+DATABASEURI = "postgresql://postgres:amaurylovesalex@127.0.0.1"
 
 # psycopg2 config
-CONFIG = "dbname=w4111 \
-          user=jn2717 \
-          password=amaurylovesalex"
-#CONFIG = "dbname=postgres \
-#          user=postgres \
+#CONFIG = "dbname=w4111 \
+#          user=jn2717 \
 #          password=amaurylovesalex"
+CONFIG = "dbname=postgres \
+          user=postgres \
+          password=amaurylovesalex"
 
 
 def create_schema():
