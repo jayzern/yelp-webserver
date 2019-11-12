@@ -44,6 +44,19 @@
     <!-- Header -->
     {% include 'header.html' %}
     <div class="container">
+      <div>
+        {% for list in data %}
+          <div class="card">
+            <div class="card-body">
+              {% for key,value in list.items() %}
+                <b>{{key}}</b>: {{value}}
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+        <br>
+      </div>
+
       <h1>Basic Queries</h1>
       <!-- Get Businesses -->
       <h5>Find businesses</h5>
@@ -196,19 +209,6 @@
         </p>
       </form>
       <!-- <h5>Upvote reviews if they are useful:</h5>-->
-
-      <div>
-        {% for list in data %}
-          <div class="card">
-            <div class="card-body">
-              {% for key,value in list.items() %}
-                <b>{{key}}</b>: {{value}}
-              {% endfor %}
-            </div>
-          </div>
-        {% endfor %}
-        <br>
-      </div>
     </div>
   <!-- Footer -->
   {% include 'footer.html' %}

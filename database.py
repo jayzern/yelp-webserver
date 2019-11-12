@@ -20,9 +20,10 @@ from sqlalchemy import exc
 DATABASEURI = "postgresql://postgres:amaurylovesalex@127.0.0.1"
 
 # psycopg2 config
-#CONFIG = "dbname=w4111 \
-#          user=jn2717 \
-#          password=amaurylovesalex"
+CONFIG = "host=34.74.165.156 \
+          dbname=w4111 \
+          user=jn2717 \
+          password=amaurylovesalex"
 CONFIG = "dbname=postgres \
           user=postgres \
           password=amaurylovesalex"

@@ -15,7 +15,6 @@ Read about it online.
 
 NOTE:
 - Remember to handle SQL Injections, otherwise lose marks
-- Should be able to DELETE
 - Implement ERROR handling
 """
 
@@ -35,7 +34,7 @@ tmpl_dir = os.path.join(
 app = Flask(__name__, template_folder=tmpl_dir)
 
 """Google Cloud database"""
-#DATABASEURI = "postgresql://jn2717:amaurylovesalex@35.196.44.144/w4111"
+#DATABASEURI = "postgresql://jn2717:amaurylovesalex@34.74.165.156/proj1part2"
 DATABASEURI = "postgresql://postgres:amaurylovesalex@127.0.0.1"
 
 engine = create_engine(DATABASEURI)
