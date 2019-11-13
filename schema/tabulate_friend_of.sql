@@ -1,4 +1,3 @@
--- COPY/PASTE THIS for testing purposes only!
 INSERT INTO Friend_Of
     (friendship_id,
     user_one_id,

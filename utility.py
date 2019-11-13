@@ -8,8 +8,8 @@ Utility functions to extract data from the json files
 import json
 import os
 
-#BASE_DIR = './example_tiny_data/'
-BASE_DIR = './down_sample/'
+BASE_DIR = './example_tiny_data/'
+#BASE_DIR = './down_sample/'
 
 def get_business():
     file_dir = os.path.join(BASE_DIR, 'business.json')
