@@ -277,32 +277,39 @@ def get_busy_business():
     checkins = request.form['checkins']
     ratings = request.form['ratings']
 
-    # Execute query
-    cursor = g.conn.execute(
-        'SELECT B1.name, B1.address, M.blob_data \
-        FROM Business B1 INNER JOIN Media M ON B1.business_id = M.business_id \
-        WHERE \
-            B1.business_id IN ((SELECT B2.business_id \
-                                FROM Business B2 \
-                                WHERE B2.avg_stars > %s) \
-                                INTERSECT \
-                                (SELECT C.business_id \
-                                FROM Checkins C \
-                                GROUP BY C.business_id \
-                                HAVING COUNT(C.business_id) > %s))',
-        (ratings, checkins)
-    )
+    if checkins != '' and ratings != '':
+        # Execute query
+        cursor = g.conn.execute(
+            'SELECT B1.name, B1.address, M.blob_data \
+            FROM Business B1 INNER JOIN Media M ON B1.business_id = M.business_id \
+            WHERE \
+                B1.business_id IN ((SELECT B2.business_id \
+                                    FROM Business B2 \
+                                    WHERE B2.avg_stars > %s) \
+                                    INTERSECT \
+                                    (SELECT C.business_id \
+                                    FROM Checkins C \
+                                    GROUP BY C.business_id \
+                                    HAVING COUNT(C.business_id) > %s))',
+            (ratings, checkins)
+        )
 
-    # Fetch data
-    data = []
-    for result in cursor:
-        data.append({
-            'name':result['name'],
-            'address':result['address'],
-            'blob_data':result['blob_data']
-        })
-    cursor.close()
-    print(data)
+        # Fetch data
+        data = []
+        for result in cursor:
+            data.append({
+                'name':result['name'],
+                'address':result['address'],
+                'blob_data':result['blob_data']
+            })
+
+        # If no data
+        if data == []:
+            data = [{'Message': 'No busy businesses found!'}]
+
+        cursor.close()
+    else:
+        data = [{'Error': 'Please enter checkins and ratings!'}]
 
     # Send to View
     context = dict(data=data)
@@ -314,31 +321,42 @@ def get_friend_tips():
     # Get data from forms
     user_id = request.form['user_id']
 
-    # Execute query
-    cursor = g.conn.execute(
-        'SELECT U.name AS user_name, B.name AS business_name, T.tip_text \
-        FROM Yelp_User U, Business B, Tips T \
-        WHERE U.user_id = T.user_id AND T.business_id = B.business_id \
-        AND \
-            U.user_id IN ((SELECT F.user_two_id AS friends_of_user_one \
-                          FROM Yelp_User U, Friend_Of F \
-                          WHERE U.user_id = F.user_one_id AND U.user_id = %s) \
-                          UNION \
-                          (SELECT F.user_two_id AS friends_of_user_one \
-                          FROM Yelp_User U, Friend_Of F \
-                          WHERE U.user_id = F.user_two_id AND U.user_id = %s))',
-        (user_id, user_id)
-    )
+    # Error handling
+    if user_id != '':
+        # Execute query
+        cursor = g.conn.execute(
+            'SELECT U.name AS user_name, B.name AS business_name, T.tip_text \
+            FROM Yelp_User U, Business B, Tips T \
+            WHERE U.user_id = T.user_id AND T.business_id = B.business_id \
+            AND \
+                U.user_id IN ((SELECT F.user_two_id AS friends_of_user_one \
+                              FROM Yelp_User U, Friend_Of F \
+                              WHERE U.user_id = F.user_one_id AND U.user_id = %s) \
+                              UNION \
+                              (SELECT F.user_two_id AS friends_of_user_one \
+                              FROM Yelp_User U, Friend_Of F \
+                              WHERE U.user_id = F.user_two_id AND U.user_id = %s))',
+            (user_id, user_id)
+        )
 
-    # Fetch data
-    data = []
-    for result in cursor:
-        data.append({
-            'user_name':result['user_name'],
-            'business_name':result['business_name'],
-            'tip_text':result['tip_text']
-        })
-    cursor.close()
+        # Fetch data
+        data = []
+        for result in cursor:
+            data.append({
+                'user_name':result['user_name'],
+                'business_name':result['business_name'],
+                'tip_text':result['tip_text']
+            })
+
+        # If no data then return nothing found
+        if data == []:
+            data = [{'Message': 'No Tips found! User id not valid or please \
+            add more friends!'}]
+
+        cursor.close()
+    else:
+        data = [{'Error': 'Please enter a friend id!'}]
+
 
     # Send to View
     context = dict(data=data)
@@ -350,28 +368,34 @@ def get_users_city():
     # Get data from forms
     city = request.form['city']
 
-    # Execute query
-    cursor = g.conn.execute(
-        'SELECT U.user_id, U.name \
-        FROM Yelp_User U \
-        WHERE U.user_id IN \
-            (SELECT R.user_id \
-            FROM Reviews R \
-            WHERE EXISTS \
-                (SELECT * \
-                FROM Business B \
-                WHERE B.city = %s AND R.business_id = B.business_id))',
-        (city)
-    )
+    if city != '':
+        # Execute query
+        cursor = g.conn.execute(
+            'SELECT U.user_id, U.name \
+            FROM Yelp_User U \
+            WHERE U.user_id IN \
+                (SELECT R.user_id \
+                FROM Reviews R \
+                WHERE EXISTS \
+                    (SELECT * \
+                    FROM Business B \
+                    WHERE B.city = %s AND R.business_id = B.business_id))',
+            (city)
+        )
 
-    # Fetch data
-    data = []
-    for result in cursor:
-        data.append({
-            'user_id':result['user_id'],
-            'name':result['name']
-        })
-    cursor.close()
+        # Fetch data
+        data = []
+        for result in cursor:
+            data.append({
+                'user_id':result['user_id'],
+                'name':result['name']
+            })
+        cursor.close()
+
+        if data == []:
+            data = [{'Message': 'No users found!'}]
+    else:
+        data = [{'Error': 'Please enter a city!'}]
 
     # Send to View
     context = dict(data=data)
@@ -383,29 +407,35 @@ def get_friend_reviewed():
     # Get data from forms
     user_id = request.form['user_id']
 
-    # Execute query
-    cursor = g.conn.execute(
-        'SELECT business_id FROM reviews R \
-        JOIN \
-            (SELECT user_one_id AS u_id FROM Friend_of WHERE user_two_id = %s \
-            UNION \
-            SELECT user_two_id AS u_id FROM Friend_of WHERE user_one_id = %s) F \
-        ON R.user_id = F.u_id \
-        WHERE business_id NOT IN ( \
-            SELECT business_id FROM reviews \
-            WHERE user_id = %s \
-        )',
-        (user_id, user_id, user_id)
-    )
+    if user_id != '':
+        # Execute query
+        cursor = g.conn.execute(
+            'SELECT business_id FROM reviews R \
+            JOIN \
+                (SELECT user_one_id AS u_id FROM Friend_of WHERE user_two_id = %s \
+                UNION \
+                SELECT user_two_id AS u_id FROM Friend_of WHERE user_one_id = %s) F \
+            ON R.user_id = F.u_id \
+            WHERE business_id NOT IN ( \
+                SELECT business_id FROM reviews \
+                WHERE user_id = %s \
+            )',
+            (user_id, user_id, user_id)
+        )
 
-    # Fetch data
-    data = []
-    if cursor:
-        for result in cursor:
-            data.append({
-                'business_id':result['business_id']
-            })
-    cursor.close()
+        # Fetch data
+        data = []
+        if cursor:
+            for result in cursor:
+                data.append({
+                    'business_id':result['business_id']
+                })
+        cursor.close()
+
+        if data == []:
+            data = [{'Message': 'No businesses found!'}]
+    else:
+        data = [{'Error': 'Please enter a user_id!'}]
 
     # Send to View
     context = dict(data=data)
@@ -418,23 +448,29 @@ def get_visit_city():
     # Get data from forms
     city = request.form['city']
 
-    # Execute query
-    cursor = g.conn.execute(
-        'SELECT R.review_text, B.name FROM reviews R \
-        JOIN business B ON B.business_id = R.business_id \
-        WHERE B.city = %s AND R.useful_count > 0',
-        (city)
-    )
+    if city != '':
+        # Execute query
+        cursor = g.conn.execute(
+            'SELECT R.review_text, B.name FROM reviews R \
+            JOIN business B ON B.business_id = R.business_id \
+            WHERE B.city = %s AND R.useful_count > 0',
+            (city)
+        )
 
-    # Fetch data
-    data = []
-    if cursor:
-        for result in cursor:
-            data.append({
-                'review_text':result['review_text'],
-                'name':result['name']
-            })
-    cursor.close()
+        # Fetch data
+        data = []
+        if cursor:
+            for result in cursor:
+                data.append({
+                    'review_text':result['review_text'],
+                    'name':result['name']
+                })
+        cursor.close()
+
+        if data == []:
+            data = [{'Message': 'No reviews found!'}]
+    else:
+        data = [{'Error': 'Please enter a city!'}]
 
     # Send to View
     context = dict(data=data)
@@ -446,23 +482,30 @@ def get_users_enjoyed():
     # Get data from forms
     business_id = request.form['business_id']
 
-    # Execute query
-    cursor = g.conn.execute(
-        'SELECT Y.name FROM yelp_user Y \
-        JOIN reviews R ON R.user_id = Y.user_id \
-        JOIN business B ON B.business_id = R.business_id \
-        WHERE B.business_id = %s AND CAST(R.stars AS REAL) >= B.avg_stars',
-        (business_id)
-    )
+    if business_id != '':
 
-    # Fetch data
-    data = []
-    if cursor:
-        for result in cursor:
-            data.append({
-                'name':result['name']
-            })
-    cursor.close()
+        # Execute query
+        cursor = g.conn.execute(
+            'SELECT Y.name FROM yelp_user Y \
+            JOIN reviews R ON R.user_id = Y.user_id \
+            JOIN business B ON B.business_id = R.business_id \
+            WHERE B.business_id = %s AND CAST(R.stars AS REAL) >= B.avg_stars',
+            (business_id)
+        )
+
+        # Fetch data
+        data = []
+        if cursor:
+            for result in cursor:
+                data.append({
+                    'name':result['name']
+                })
+        cursor.close()
+        
+        if data == []:
+            data = [{'Message': 'No users found!'}]
+    else:
+        data = [{'Error': 'Please enter a business_id!'}]
 
     # Send to View
     context = dict(data=data)
