@@ -51,8 +51,8 @@ tips_data = util.get_tips()
 db.tabulate_tips(tips_data)
 checkins_data = util.get_checkins()
 db.tabulate_checkins(checkins_data)
-media_data = util.get_media()
-db.tabulate_media(media_data)
+#media_data = util.get_media()
+#db.tabulate_media(media_data)
 
 @app.before_request
 def before_request():
@@ -157,6 +157,7 @@ def get_business():
 
     # Send to View
     context = dict(data=data)
+
     return render_template("index.html", **context)
 
 # TODO:

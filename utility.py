@@ -8,11 +8,11 @@ Utility functions to extract data from the json files
 import json
 import os
 
-BASE_DIR = './example_tiny_data/'
-
+#BASE_DIR = './example_tiny_data/'
+BASE_DIR = './down_sample/'
 
 def get_business():
-    file_dir = os.path.join(BASE_DIR, 'business_tiny.json')
+    file_dir = os.path.join(BASE_DIR, 'business.json')
     with open(file_dir, 'r') as f:
         data = []
         for line in f:
@@ -57,7 +57,7 @@ def get_business():
 
 
 def get_yelp_user():
-    file_dir = os.path.join(BASE_DIR, 'user_tiny.json')
+    file_dir = os.path.join(BASE_DIR, 'user.json')
     with open(file_dir, 'r') as f:
         data = []
         for line in f:
@@ -75,7 +75,7 @@ def get_yelp_user():
 
 
 def get_reviews():
-    file_dir = os.path.join(BASE_DIR, 'review_tiny.json')
+    file_dir = os.path.join(BASE_DIR, 'review.json')
     with open(file_dir, 'r') as f:
         data = []
         for line in f:
@@ -94,7 +94,7 @@ def get_reviews():
 
 
 def get_tips():
-    file_dir = os.path.join(BASE_DIR, 'tip_tiny.json')
+    file_dir = os.path.join(BASE_DIR, 'tip.json')
     with open(file_dir, 'r') as f:
         data = []
         for line in f:
@@ -112,7 +112,7 @@ def get_tips():
 
 def get_checkins():
     """Rearrange dates to pairs here"""
-    file_dir = os.path.join(BASE_DIR, 'checkin_tiny.json')
+    file_dir = os.path.join(BASE_DIR, 'checkin.json')
     with open(file_dir, 'r') as f:
         data = []
         for line in f:
@@ -132,7 +132,7 @@ def get_checkins():
 
 
 def get_media():
-    file_dir = os.path.join(BASE_DIR, 'photo_tiny.json')
+    file_dir = os.path.join(BASE_DIR, 'photo.json')
     with open(file_dir, 'r') as f:
         data = []
         for line in f:
