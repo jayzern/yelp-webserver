@@ -501,7 +501,7 @@ def get_users_enjoyed():
                     'name':result['name']
                 })
         cursor.close()
-        
+
         if data == []:
             data = [{'Message': 'No users found!'}]
     else:
@@ -522,20 +522,50 @@ def insert_reviews():
     review_text = request.form['review_text']
     useful_count = request.form['useful_count']
 
-    # Set the sequence to the next value
-    g.conn.execute("""SELECT setval('reviews_review_id_seq', max(review_id)) FROM Reviews;""")
+    if business_id != '' and user_id != '' and review_date != '' \
+    and stars != '' and review_text != '' and useful_count != '':
 
-    # Execute query
-    # review_id will auto increment here
-    g.conn.execute(
-        'INSERT INTO Reviews \
-            (review_id, business_id, user_id, review_date, stars, review_text, useful_count) \
-        VALUES \
-            (DEFAULT, %s, %s, %s, %s, %s ,%s)',
-        (business_id, user_id, review_date, stars, review_text, useful_count)
-    )
+        # Set the sequence to the next value
+        g.conn.execute("""SELECT setval('reviews_review_id_seq', max(review_id)) FROM Reviews;""")
 
-    return render_template("index.html")
+        # Execute query
+        # review_id will auto increment here
+        try:
+            g.conn.execute(
+                'INSERT INTO Reviews \
+                    (review_id, business_id, user_id, review_date, stars, review_text, useful_count) \
+                VALUES \
+                    (DEFAULT, %s, %s, %s, %s, %s ,%s)',
+                (business_id, user_id, review_date, stars, review_text, useful_count)
+            )
+
+            # Return updated value
+            cursor = g.conn.execute(
+                'SELECT * FROM Reviews ORDER BY review_id DESC LIMIT 1'
+            )
+
+            # Fetch data
+            data = []
+            for result in cursor:
+                data.append({
+                    'review_id':result['review_id'],
+                    'business_id':result['business_id'],
+                    'user_id':result['user_id'],
+                    'review_date':result['review_date'],
+                    'stars':result['stars'],
+                    'review_text':result['review_text'],
+                    'useful_count':result['useful_count'],
+                })
+            cursor.close()
+        except:
+            data = [{'Error': 'Please make sure all inputs are VALID!'}]
+
+    else:
+        data = [{'Error': 'Please enter all inputs!'}]
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
 
 # TODO:
 @app.route('/insert_tips', methods=['POST'])
@@ -547,16 +577,30 @@ def insert_tips():
     tip_date = request.form['tip_date']
     tip_text = request.form['tip_text']
 
-    # Execute query
-    g.conn.execute(
-        'INSERT INTO Tips \
-            (business_id, user_id, compliment_count, tip_date, tip_text) \
-        VALUES \
-            (%s, %s, %s, %s ,%s)',
-        (business_id, user_id, compliment_count, tip_date, tip_text)
-    )
+    if business_id != '' and user_id != '' and compliment_count != '' \
+    and tip_date != '' and tip_text != '':
 
-    return render_template("index.html")
+        try:
+            # Execute query
+            g.conn.execute(
+                'INSERT INTO Tips \
+                    (business_id, user_id, compliment_count, tip_date, tip_text) \
+                VALUES \
+                    (%s, %s, %s, %s, %s)',
+                (business_id, user_id, compliment_count, tip_date, tip_text)
+            )
+
+            data = [{'business_id': business_id, 'user_id': user_id,
+                    'compliment_count':compliment_count, 'tip_date': tip_date,
+                    'tip_text': tip_text}]
+        except:
+            data = [{'Error': 'Please make sure all inputs are VALID!'}]
+    else:
+        data = [{'Error': 'Please enter all inputs!'}]
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
 
 # TODO:
 @app.route('/insert_friends', methods=['POST'])
@@ -565,19 +609,60 @@ def insert_friends():
     user_one_id = request.form['user_one_id']
     user_two_id = request.form['user_two_id']
 
-    # Set the sequence to the next value
-    g.conn.execute("""SELECT setval('friend_of_friendship_id_seq', max(friendship_id)) FROM Friend_Of;""")
+    if user_one_id != '' and user_two_id != '':
+        # Set the sequence to the next value
+        g.conn.execute("""SELECT setval('friend_of_friendship_id_seq', max(friendship_id)) FROM Friend_Of;""")
 
-    # Execute query
-    g.conn.execute(
-        'INSERT INTO Friend_Of \
-            (friendship_id, user_one_id, user_two_id) \
-        VALUES \
-            (DEFAULT, %s, %s)',
-        (user_one_id, user_two_id)
-    )
+        try:
+            # Check if friend one is a friends with friends two
+            # or if friend two is friends with friend one
+            cursor_one = g.conn.execute('SELECT * FROM Friend_Of WHERE user_one_id = %s AND user_two_id = %s', (user_one_id, user_two_id))
+            cursor_two = g.conn.execute('SELECT * FROM Friend_Of WHERE user_one_id = %s AND user_two_id = %s', (user_two_id, user_one_id))
+            not_friends = True
+            for result in cursor_one:
+                if result:
+                    not_friends = False
+            for result in cursor_two:
+                if result:
+                    not_friends = False
+            cursor_one.close()
+            cursor_two.close()
 
-    return render_template("index.html")
+
+            if not_friends:
+                # Execute query
+                g.conn.execute(
+                    'INSERT INTO Friend_Of \
+                        (friendship_id, user_one_id, user_two_id) \
+                    VALUES \
+                        (DEFAULT, %s, %s)',
+                    (user_one_id, user_two_id)
+                )
+
+                # Return the new value
+                cursor = g.conn.execute(
+                    'SELECT * FROM Friend_Of ORDER BY friendship_id DESC LIMIT 1'
+                )
+
+                # Fetch data
+                data = []
+                for result in cursor:
+                    data.append({
+                        'friendship_id':result['friendship_id'],
+                        'user_one_id':result['user_one_id'],
+                        'user_two_id':result['user_two_id']
+                    })
+                cursor.close()
+            else:
+                data = [{'Message': 'User One is already friends with User Two!'}]
+        except:
+            data = [{'Error': 'Please make sure all inputs are VALID!'}]
+    else:
+        data = [{'Error': 'Please enter all inputs!'}]
+
+    # Send to View
+    context = dict(data=data)
+    return render_template("index.html", **context)
 
 # TODO:
 @app.route('/insert_checkins', methods=['POST'])
@@ -586,14 +671,21 @@ def insert_checkins():
     business_id = request.form['business_id']
     checkin_date = request.form['checkin_date']
 
-    # Execute query
-    g.conn.execute(
-        'INSERT INTO Checkins \
-            (business_id, checkin_date) \
-        VALUES \
-            (%s, %s)',
-        (user_one_id, user_two_id)
-    )
+    if business_id != '' and checkin_date != '':
+        try:
+            # Execute query
+            g.conn.execute(
+                'INSERT INTO Checkins \
+                    (business_id, checkin_date) \
+                VALUES \
+                    (%s, %s)',
+                (business_id, checkin_date)
+            )
+            data = [{'business_id': business_id, 'checkin_date': checkin_date}]
+        except:
+            data = [{'Error': 'Please make sure your inputs are VALID!'}]
+    else:
+        data = [{'Error': 'Please enter all inputs!'}]
 
     # Send to View
     context = dict(data=data)
@@ -605,31 +697,40 @@ def update_reviews_useful():
     # Get data from forms
     review_id = request.form['review_id']
 
-    # Execute query
-    g.conn.execute(
-        'UPDATE Reviews \
-        SET useful_count = useful_count + 1 \
-        WHERE review_id = %s',
-        (review_id)
-    )
+    if review_id != '':
+        try:
+            # Execute query
+            g.conn.execute(
+                'UPDATE Reviews \
+                SET useful_count = useful_count + 1 \
+                WHERE review_id = %s',
+                (review_id)
+            )
 
-    # Return updated value
-    cursor = g.conn.execute(
-        'SELECT review_id, useful_count \
-        FROM Reviews \
-        WHERE review_id = %s',
-        (review_id)
-    )
+            # Return updated value
+            cursor = g.conn.execute(
+                'SELECT review_id, useful_count \
+                FROM Reviews \
+                WHERE review_id = %s',
+                (review_id)
+            )
 
-    # Fetch data
-    data = []
-    if cursor:
-        for result in cursor:
-            data.append({
-                'review_id':result['review_id'],
-                'useful_count':result['useful_count']
-            })
-    cursor.close()
+            # Fetch data
+            data = []
+            if cursor:
+                for result in cursor:
+                    data.append({
+                        'review_id':result['review_id'],
+                        'useful_count':result['useful_count']
+                    })
+            cursor.close()
+
+            if data == []:
+                data = [{'Message': 'Review ID not found!'}]
+        except:
+            data = [{'Error': 'Please make sure all inputs are VALID!'}]
+    else:
+        data = [{'Error': 'Please enter all inputs!'}]
 
     # Send to View
     context = dict(data=data)

@@ -96,7 +96,7 @@
       <h5>Sometimes businesses that are busy tend to be a good sign that it
       must be good. Find the name, address and photos (if any) of businesses
       that have at least X total checkins and have an average rating of at
-      least Y.</h5>
+      least Y. (i.e. 100 and 3) </h5>
       <form method="POST" action="/get_busy_business">
         <p>
           checkins: <input type="text" name="checkins">
@@ -109,7 +109,7 @@
       your friends! Here, we want to find all written tips (tips are like
       written reviews, except that they are shorter) given to businesses
       written by your friends (assume you are user_id = X), plus the name
-      of the business and the name of your friends.</h5>
+      of the business and the name of your friends. (i.e. 1 to 25)</h5>
       <form method="POST" action="/get_friend_tips">
         <p>
           user_id: <input type="text" name="user_id">
@@ -118,7 +118,7 @@
       </form>
 
       <h5>Find user_ids and names of people who have written reviews of
-      businesses in any city X.</h5>
+      businesses in any city X. (i.e. Phoenix, Las Vegas)</h5>
       <form method="POST" action="/get_users_city">
         <p>
           city: <input type="text" name="city">
@@ -129,7 +129,7 @@
       <h5>If you are looking for a new restaurant you might have look on what
       your friends tried but you don't have tried yet. The following query
       makes you able to look at all the business your friends reviewed but you
-      have not reviewed yet. (Here we suppose to be user_id = X)</h5>
+      have not reviewed yet. (Here we suppose to be user_id = X) (i.e. 1 to 25)</h5>
       <form method="POST" action="/get_friend_reviewed">
         <p>
           user_id: <input type="text" name="user_id">
@@ -137,8 +137,8 @@
         </p>
       </form>
 
-      <h5>We are planing a trip in a city X (i.e. Las Vegas) thus we want to
-      check all useful reviews of city X businesses.</h5>
+      <h5>We are planing a trip in a city X thus we want to
+      check all useful reviews of city X businesses. (i.e. Las Vegas)</h5>
       <form method="POST" action="/get_visit_city">
         <p>
           city: <input type="text" name="city">
@@ -149,6 +149,7 @@
       <h5>We are a business and we are interested by people who enjoyed our
       restaurant more than the average. With this query we can check name of
       reviewers that preferred my business (business_id = X) more than the average.
+      (i.e. 1 to 25)
       </h5>
       <form method="POST" action="/get_users_enjoyed">
         <p>
@@ -158,7 +159,7 @@
       </form>
 
       <h1>Insert/Update New Data</h1>
-      <h5>Write a review for a business:</h5>
+      <h5>Write a review for a business.</h5>
       <form method="POST" action="/insert_reviews">
         <p>
           business_id: <input type="text" name="business_id">
@@ -171,7 +172,7 @@
         </p>
       </form>
 
-      <h5>Write a tip for a business:</h5>
+      <h5>Write a tip for a business.</h5>
       <form method="POST" action="/insert_tips">
         <p>
           business_id: <input type="text" name="business_id">
@@ -183,7 +184,8 @@
         </p>
       </form>
 
-      <h5>Add friends:</h5>
+      <h5>Add friends! First check if friend one is friends with friend two;
+      and vice versa. If not yet, then add friendship and return relationship.</h5>
       <form method="POST" action="/insert_friends">
         <p>
           user_one_id: <input type="text" name="user_one_id">
@@ -192,7 +194,7 @@
         </p>
       </form>
 
-      <h5>Checkin a business:</h5>
+      <h5>Checkin a business.</h5>
       <form method="POST" action="/insert_checkins">
         <p>
           business_id: <input type="text" name="business_id">
@@ -201,7 +203,7 @@
         </p>
       </form>
 
-      <h5>Upvote reviews if they are useful:</h5>
+      <h5>Upvote reviews if they are useful.</h5>
       <form method="POST" action="/update_reviews_useful">
         <p>
           review_id: <input type="text" name="review_id">
