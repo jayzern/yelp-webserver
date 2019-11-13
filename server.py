@@ -125,13 +125,33 @@ def get_business():
     city = request.form['city']
     state = request.form['state']
 
+    count = 0
+    query = 'SELECT * FROM Business WHERE ('
+    if business_id != '':
+        count += 1
+        query += "business_id='" + str(business_id) + "' AND "
+    if name != '':
+        count += 1
+        query += "name ILIKE '%%" + str(name) + "%%' AND "
+    if address != '':
+        count += 1
+        query += "address ILIKE '%%" + str(address) + "%%' AND "
+    if city != '':
+        count += 1
+        query += "city ILIKE '%%" + str(city) + "%%' AND "
+    if state != '':
+        count += 1
+        query += "state ILIKE '%%" + str(state) + "%%' AND "
+
+    if count == 0:
+        query = 'SELECT * FROM Business LIMIT 15'
+    else:
+        query = query[:-5] + ")"
+
+    print(query)
+
     # Execute query
-    cursor = g.conn.execute(
-        'SELECT * FROM Business WHERE \
-            (business_id = %s OR name = %s OR \
-            address = %s OR city = %s OR state = %s)',
-        (business_id, name, address, city, state)
-    )
+    cursor = g.conn.execute(query)
 
     # Fetch data
     data = []
@@ -166,12 +186,22 @@ def get_yelp_user():
     user_id = request.form['user_id']
     name = request.form['name']
 
+    count = 0
+    query = 'SELECT * FROM Yelp_User WHERE ('
+    if user_id != '':
+        count += 1
+        query += "user_id='" + str(user_id) + "' AND "
+    if name != '':
+        count += 1
+        query += "name ILIKE '%%" + str(name) + "%%' AND "
+
+    if count == 0:
+        query = 'SELECT * FROM Yelp_User LIMIT 15'
+    else:
+        query = query[:-5] + ")"
+
     # Execute query
-    cursor = g.conn.execute(
-        'SELECT * FROM Yelp_User WHERE \
-            (user_id = %s OR name = %s)',
-        (user_id, name)
-    )
+    cursor = g.conn.execute(query)
 
     # Fetch data
     data = []
@@ -198,12 +228,25 @@ def get_reviews():
     business_id = request.form['business_id']
     user_id = request.form['user_id']
 
+    count = 0
+    query = 'SELECT * FROM Reviews WHERE ('
+    if review_id != '':
+        count += 1
+        query += "review_id='" + str(review_id) + "' AND "
+    if business_id != '':
+        count += 1
+        query += "business_id=" + str(business_id) + "' AND "
+    if user_id != '':
+        count += 1
+        query += "user_id=" + str(user_id) + "' AND "
+
+    if count == 0:
+        query = 'SELECT * FROM Reviews LIMIT 15'
+    else:
+        query = query[:-5] + ")"
+
     # Execute query
-    cursor = g.conn.execute(
-        'SELECT * FROM Reviews WHERE \
-            (review_id = %s OR business_id = %s OR user_id = %s)',
-        (review_id, business_id, user_id)
-    )
+    cursor = g.conn.execute(query)
 
     # Fetch data
     data = []
