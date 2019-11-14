@@ -173,6 +173,11 @@ def get_business():
             'price_range':result['price_range'],
             'open_hours':result['open_hours']
         })
+
+    #No data
+    if data == []:
+        data = [{'Message': 'Sorry, no business found.'}]
+    
     cursor.close()
 
     # Send to View
@@ -218,6 +223,11 @@ def get_yelp_user():
             'avg_stars':result['avg_stars'],
             'review_count':result['review_count']
         })
+
+    #No data
+    if data == []:
+        data = [{'Message': 'Sorry, no user found.'}]
+
     cursor.close()
 
     # Send to View
@@ -304,6 +314,11 @@ def get_reviews():
             'review_text':result['review_text'],
             'useful_count':result['useful_count'],
         })
+
+    #No data
+    if data == []:
+        data = [{'Message': 'Sorry, no review found.'}]
+    
     cursor.close()
 
     # Send to View
