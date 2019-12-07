@@ -51,9 +51,9 @@ tips_data = util.get_tips()
 db.tabulate_tips(tips_data)
 checkins_data = util.get_checkins()
 db.tabulate_checkins(checkins_data)
-# media_data = util.get_media()
-# db.tabulate_media(media_data)
-# db.tabulate_friends()
+media_data = util.get_media()
+db.tabulate_media(media_data)
+db.tabulate_friends()
 
 @app.before_request
 def before_request():
