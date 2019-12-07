@@ -32,7 +32,8 @@ CONFIG = "dbname=postgres \
 def create_schema():
     """Create schema directly from yelp_schema.sql"""
     engine = create_engine(DATABASEURI)
-    schema_dir = os.path.join("./schema", "yelp_schema.sql")
+    #schema_dir = os.path.join("./schema", "yelp_schema.sql")
+    schema_dir = os.path.join("./schema", "yelp_schema_Project2.sql")
     schema_file = open(schema_dir)
     sql_command = text(schema_file.read())
     try:
@@ -65,7 +66,7 @@ def tabulate_business(data):
         cur = conn.cursor()
         args_str = ','.join(
             cur.mogrify(
-                "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                """(%s,%s,%s,%s,%s,%s,%s,%s,%s,ROW(%s,%s,%s,%s),%s,ROW(%s,%s,%s,%s,%s,%s,%s))""",
                 x).decode("utf-8") for x in data)
         sql_command = """INSERT INTO Business
                             (business_id,
@@ -77,13 +78,28 @@ def tabulate_business(data):
                             review_count,
                             categories_list,
                             avg_stars,
-                            to_go,
-                            wifi,
-                            ambience,
-                            parking,
+                            attribute,
                             price_range,
                             open_hours)
                         VALUES """ + args_str + ";"
+
+        # sql_command = """INSERT INTO Business
+        #                     (business_id,
+        #                     name,
+        #                     address,
+        #                     city,
+        #                     state,
+        #                     postal_code,
+        #                     review_count,
+        #                     categories_list,
+        #                     avg_stars,
+        #                     to_go,
+        #                     wifi,
+        #                     ambience,
+        #                     parking,
+        #                     price_range,
+        #                     open_hours)
+        #                 VALUES """ + args_str + ";"
         cur.execute(sql_command)
         conn.commit()
         cur.close()
@@ -123,7 +139,7 @@ def tabulate_reviews(data):
         conn = psycopg2.connect(CONFIG)
         cur = conn.cursor()
         args_str = ','.join(cur.mogrify(
-            "(%s,%s,%s,%s,%s,%s,%s)", x).decode("utf-8") for x in data)
+            "(%s,%s,%s,%s,%s,%s,%s,%s)", x).decode("utf-8") for x in data)
         sql_command = """INSERT INTO Reviews
                             (review_id,
                             business_id,
@@ -131,6 +147,7 @@ def tabulate_reviews(data):
                             review_date,
                             stars,
                             review_text,
+                            review_text_tsvector,
                             useful_count)
                         VALUES """ + args_str + ";"
         cur.execute(sql_command)
@@ -148,13 +165,14 @@ def tabulate_tips(data):
         conn = psycopg2.connect(CONFIG)
         cur = conn.cursor()
         args_str = ','.join(cur.mogrify(
-            "(%s,%s,%s,%s,%s)", x).decode("utf-8") for x in data)
+            "(%s,%s,%s,%s,%s,%s)", x).decode("utf-8") for x in data)
         sql_command = """INSERT INTO Tips
                             (business_id,
                             user_id,
                             compliment_count,
                             tip_date,
-                            tip_text)
+                            tip_text,
+                            tip_text_tsvector)
                         VALUES """ + args_str + ";"
         cur.execute(sql_command)
         conn.commit()

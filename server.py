@@ -51,9 +51,9 @@ tips_data = util.get_tips()
 db.tabulate_tips(tips_data)
 checkins_data = util.get_checkins()
 db.tabulate_checkins(checkins_data)
-media_data = util.get_media()
-db.tabulate_media(media_data)
-db.tabulate_friends()
+# media_data = util.get_media()
+# db.tabulate_media(media_data)
+# db.tabulate_friends()
 
 @app.before_request
 def before_request():
@@ -176,7 +176,7 @@ def get_business():
     #No data
     if data == []:
         data = [{'Message': 'Sorry, no business found.'}]
-    
+
     cursor.close()
 
     # Send to View
@@ -208,7 +208,7 @@ def get_yelp_user():
                 LIMIT 15',
             (name)
         )
-        
+
 
 
     # Fetch data
@@ -257,7 +257,7 @@ def get_reviews():
                         review_id = %s AND \
                         business_id = %s',
                     (review_id, business_id)
-               ) 
+               )
 
         else:
             if user_id != '':
@@ -287,7 +287,7 @@ def get_reviews():
                     'SELECT * FROM Reviews WHERE \
                         business_id = %s',
                     (business_id)
-               ) 
+               )
 
         else:
             if user_id != '':
@@ -317,7 +317,7 @@ def get_reviews():
     #No data
     if data == []:
         data = [{'Message': 'Sorry, no review found.'}]
-    
+
     cursor.close()
 
     # Send to View
