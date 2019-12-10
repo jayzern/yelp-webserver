@@ -75,7 +75,7 @@ def get_business():
                 row['state'],
                 row['postal_code'],
                 row['review_count'],
-                row['categories'].split(','),
+                row['categories'].split(', '),
                 row['stars'],
                 to_go,
                 wifi,
