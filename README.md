@@ -27,8 +27,6 @@ python server.py
 
 ## Demo
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=6ZZVjaXOyfc
-" target="_blank"><img src="https://img.youtube.com/vi/6ZZVjaXOyfc/0.jpg" 
-alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+Link to Youtube:
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/6ZZVjaXOyfc/0.jpg)](https://www.youtube.com/watch?v=6ZZVjaXOyfc)
