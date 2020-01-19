@@ -27,4 +27,6 @@ python server.py
 
 ## Demo
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/6ZZVjaXOyfc&t=6s/0.jpg)](https://www.youtube.com/watch?v=6ZZVjaXOyfc&t=6s)
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=6ZZVjaXOyfc&t=6s
+" target="_blank"><img src="http://img.youtube.com/vi/6ZZVjaXOyfc&t=6s/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
